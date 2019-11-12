@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using Assert = NUnit.Framework.Assert;
 
@@ -63,7 +65,7 @@ namespace TestProject
         public void CheckStickersTest()
         {
             driver.Url = "http://localhost/litecart";
-            IList<IWebElement> products = driver.FindElements(By.XPath("//li[contains(@class, 'product')]"));
+            IList<IWebElement> products = driver.FindElements(By.XPath("//li[contains(@class, 'productMain')]"));
             foreach (IWebElement product in products)
             {
                 IList<IWebElement> stickers = product.FindElements(By.XPath(".//div[contains(@class, 'sticker')]"));
@@ -142,6 +144,72 @@ namespace TestProject
                 driver.FindElement(By.XPath("//span[contains(text(),'Geo Zones')]")).Click();
             }
         }
-       
+
+        [Test]
+        public void ProductCheckTest() 
+        {
+            driver.Url = "http://localhost/litecart";
+            IWebElement campaignBlock = driver.FindElement(By.Id("box-campaigns"));
+            IWebElement productMain = campaignBlock.FindElement(By.TagName("li"));
+            string nameMain = productMain.FindElement(By.ClassName("name")).Text;
+            string priceMain = productMain.FindElement(By.ClassName("regular-price")).Text;
+            string priceColorMain = productMain.FindElement(By.ClassName("regular-price")).GetCssValue("color").Replace("rgba(", string.Empty);
+            string [] rgbRegularPriceMain = priceColorMain.Split(',');
+            int redRegularPriceMain = Convert.ToInt32(rgbRegularPriceMain[0]);
+            int greenRegularPriceMain = Convert.ToInt32(rgbRegularPriceMain[1]);
+            int blueRegularPriceMain = Convert.ToInt32(rgbRegularPriceMain[2]);
+            Assert.AreEqual(redRegularPriceMain, greenRegularPriceMain, blueRegularPriceMain);
+            string styleRegularPiceMain = productMain.FindElement(By.ClassName("regular-price")).GetCssValue("text-decoration-line");
+            Assert.AreEqual(styleRegularPiceMain, "line-through");
+            Size sizeRegularPriceMain = productMain.FindElement(By.ClassName("regular-price")).Size;
+            int widthRegularPriceMain = sizeRegularPriceMain.Width;
+            int heightRegularPriceMain = sizeRegularPriceMain.Height;
+            string campPriceMain = productMain.FindElement(By.ClassName("campaign-price")).Text;
+            string campPriceColorMain = productMain.FindElement(By.ClassName("campaign-price")).GetCssValue("color").Replace("rgba(", string.Empty);
+            string [] rgbCampPriceMain = campPriceColorMain.Split(',');
+            int greenCampPriceMain = Convert.ToInt32(rgbCampPriceMain[1]);
+            int blueCampPricemain = Convert.ToInt32(rgbCampPriceMain[2]);
+            Assert.AreEqual(greenCampPriceMain, 0);
+            Assert.AreEqual(blueCampPricemain, 0);
+            int styleCampPriceMain = Convert.ToInt32(productMain.FindElement(By.ClassName("campaign-price")).GetCssValue("font-weight"));
+            Assert.IsTrue(styleCampPriceMain >= 700);
+            Size sizeCampPriceMain = productMain.FindElement(By.ClassName("campaign-price")).Size;
+            int widthCampPriceMain = sizeCampPriceMain.Width;
+            int heightCampPriceMain = sizeCampPriceMain.Height;
+            Assert.True(widthCampPriceMain > widthRegularPriceMain);
+            Assert.True(heightCampPriceMain > heightRegularPriceMain);
+            productMain.Click();
+            IWebElement productPage = driver.FindElement(By.Id("box-product"));
+            string namePage = productPage.FindElement(By.ClassName("title")).Text;
+            string pricePage = productPage.FindElement(By.ClassName("regular-price")).Text;
+            string priceColorPage = productPage.FindElement(By.ClassName("regular-price")).GetCssValue("color").Replace("rgba(", string.Empty);
+            string [] rgbRegularPricePage = priceColorPage.Split(',');
+            int redRegularPricePage = Convert.ToInt32(rgbRegularPricePage[0]);
+            int greenRegularPricePage = Convert.ToInt32(rgbRegularPricePage[1]);
+            int blueRegularPricePage = Convert.ToInt32(rgbRegularPricePage[2]);
+            Assert.AreEqual(redRegularPricePage, greenRegularPricePage, blueRegularPricePage);
+            string styleRegularPricePage = productPage.FindElement(By.ClassName("regular-price")).GetCssValue("text-decoration-line");
+            Assert.AreEqual(styleRegularPricePage, "line-through");
+            Size sizeRegularPricePage = productPage.FindElement(By.ClassName("regular-price")).Size;
+            int widthRegularPricePage = sizeRegularPricePage.Width;
+            int heightRegularPricePage = sizeRegularPricePage.Height;
+            string campPricePage = productPage.FindElement(By.ClassName("campaign-price")).Text;
+            string campPriceColorPage = productPage.FindElement(By.ClassName("campaign-price")).GetCssValue("color").Replace("rgba(", string.Empty);
+            string[] rgbCampPricePage = campPriceColorPage.Split(',');
+            int greenCampPricePage = Convert.ToInt32(rgbCampPricePage[1]);
+            int blueCampPricePage = Convert.ToInt32(rgbCampPricePage[2]);
+            Assert.AreEqual(greenCampPricePage, 0);
+            Assert.AreEqual(blueCampPricePage, 0);
+            int styleCampPricePage = Convert.ToInt32(productPage.FindElement(By.ClassName("campaign-price")).GetCssValue("font-weight"));
+            Assert.IsTrue(styleCampPricePage >= 700);
+            Size sizeCampPricePage = productPage.FindElement(By.ClassName("campaign-price")).Size;
+            int widthCampPricePage = sizeCampPricePage.Width;
+            int heightCampPricePage = sizeCampPricePage.Height;
+            Assert.IsTrue(widthCampPricePage > widthRegularPricePage);
+            Assert.IsTrue(heightCampPricePage > heightRegularPricePage);
+            Assert.AreEqual(nameMain, namePage);
+            Assert.AreEqual(priceMain, pricePage);
+            Assert.AreEqual(campPriceMain, campPricePage);
+        }
     }
 }
