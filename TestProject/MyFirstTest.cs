@@ -63,15 +63,12 @@ namespace TestProject
         public void CheckStickersTest()
         {
             driver.Url = "http://localhost/litecart";
-            IList<IWebElement> products = driver.FindElements(By.ClassName("image-wrapper"));
+            IList<IWebElement> products = driver.FindElements(By.XPath("//li[contains(@class, 'product')]"));
             foreach (IWebElement product in products)
             {
-                IList<IWebElement> stickersNew = product.FindElements(By.XPath("./div[@class='sticker new']"));
-                IList<IWebElement> stickersSale = product.FindElements(By.XPath("./div[@class='sticker sale']"));
-                int stickersTotal = stickersNew.Count + stickersSale.Count;
-                Assert.IsTrue(stickersTotal == 1, "stickers count was " + stickersTotal);
+                IList<IWebElement> stickers = product.FindElements(By.XPath(".//div[contains(@class, 'sticker')]"));
+                Assert.IsTrue(stickers.Count == 1, "stickers count was " + stickers.Count);
             }
-
         }
 
         [Test]
